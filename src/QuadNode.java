@@ -1,15 +1,13 @@
-package controller;
-
 import java.util.Arrays;
 
 public class QuadNode {
     /**
-     * children: the children of some controller.QuadNode. label from bottom left: 2 3
+     * children: the children of some QuadNode. label from bottom left: 2 3
      *                                                                  0 1
      * Note that each region contains the left and bottom border.
-     * min: minimum value of the controller.QuadNode's children, or just the controller.QuadNode itself
+     * min: minimum value of the QuadNode's children, or just the QuadNode itself
      * region: what is the region which the space covers
-     * We will assume that each "controller.QuadNode" encompasses the left and bottom border.
+     * We will assume that each "QuadNode" encompasses the left and bottom border.
      */
     private QuadNode[] children;
     private int min;
@@ -86,7 +84,7 @@ public class QuadNode {
     }
 
     // HELPER METHODS
-    // Specifies if the controller.QuadNode has any children
+    // Specifies if the QuadNode has any children
     public boolean isChild() {
         for (int i = 0; i < 4 ; ++i){
             if (children[i] != null) return false;
@@ -98,7 +96,7 @@ public class QuadNode {
         return n.isChild();
     }
 
-    // Determine which quadrant the point is in wrt the controller.QuadNode
+    // Determine which quadrant the point is in wrt the QuadNode
     public int getIndexFromPosition(double x, double y){
         double midx = (region[1][0] + region[0][0])/2;
         double midy = (region[1][1] + region[0][1])/2;
@@ -111,8 +109,8 @@ public class QuadNode {
 
     // Update Functions
 
-    // Gets the controller.QuadNode which is specified in the region of a child.
-    // Recall that each "controller.QuadNode" encompasses the left and bottom border.
+    // Gets the QuadNode which is specified in the region of a child.
+    // Recall that each "QuadNode" encompasses the left and bottom border.
     public QuadNode getQuadNode(double x, double y){
         if (this.isChild()) return this;
         int index = getIndexFromPosition(x, y);
@@ -138,7 +136,7 @@ public class QuadNode {
             this.min = override ? toAdd : toAdd + this.min;
             return;
         }
-        // Find the child where the controller.QuadNode is in
+        // Find the child where the QuadNode is in
         int index = getIndexFromPosition(x, y);
         children[index].updateQuadNode(x, y, toAdd, override);
 
@@ -253,7 +251,7 @@ public class QuadNode {
 
     @Override
     public String toString() {
-        return "controller.QuadNode{\n" +
+        return "QuadNode{\n" +
                 "children=" + Arrays.toString(children) +
                 "\n, min=" + min +
                 ", region=" + Arrays.toString(region[0]) + " " + Arrays.toString(region[1]) +
