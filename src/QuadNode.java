@@ -27,8 +27,12 @@ public class QuadNode {
         this(min, new BoundingBox(minRegion), new BoundingBox(nodeRegion));
     }
 
+    public QuadNode(BoundingBox region) {
+        this(0,region,region);
+    }
+
     public QuadNode(Double[][] region) {
-        this(0,new Double[][]{{0.0,0.0},{0.0,0.0}},region); //Default minRegion and min
+        this(new BoundingBox(region));
     }
 
     public QuadNode(){
@@ -88,6 +92,14 @@ public class QuadNode {
         this.boundingBox = boundingBox;
     }
 
+    public BoundingBox getMinBoundingBox() {
+        return minBoundingBox;
+    }
+
+    public void setMinBoundingBox(BoundingBox minBoundingBox) {
+        this.minBoundingBox = minBoundingBox;
+    }
+
     // HELPER METHODS
     // Specifies if the QuadNode has any children
     public boolean isLeaf() {
@@ -134,9 +146,14 @@ public class QuadNode {
             if (child != null){
                 if (min == -1023456789){
                     min = child.getMin();
+                    minBoundingBox = child.getMinBoundingBox();
                     continue;
                 }
-                min = Math.min(child.getMin(), min);
+                int childMin = child.getMin();
+                if(childMin<min){
+                    min = child.getMin();
+                    minBoundingBox = child.getMinBoundingBox();
+                }
             }
         }
     }
@@ -188,6 +205,10 @@ public class QuadNode {
         return new double[] {Math.min(x1, x2), Math.max(x1, x2), Math.min(y1, y2), Math.max(y1, y2)};
     }
 
+    public int getMinIndex(){
+        return getIndexFromPosition(minBoundingBox.midX(),minBoundingBox.midY());
+    }
+
     public static boolean hasPositiveArea(Double[][] r){
         return r[0][0]<r[1][0]&&r[0][1]<r[1][1];
     } //
@@ -204,12 +225,6 @@ public class QuadNode {
 
 
 
-
-
-
-
-
-
     @Override
     public String toString() {
         if(this.isLeaf()){
@@ -220,7 +235,7 @@ public class QuadNode {
         }
         return "\nQuadNode{\n" +
                 "children=" + Arrays.toString(children) +
-                "\n, min=" + min +
+                "\n, min=" + min + ", minregion="+ getMinBoundingBox()+
                 ", region=" + Arrays.toString(boundingBox.getRegion()[0]) + " " + Arrays.toString(boundingBox.getRegion()[1]) + "\n"+
                 '}';
     }

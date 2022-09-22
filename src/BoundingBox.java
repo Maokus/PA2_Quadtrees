@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 public class BoundingBox {
     private Double[][] region;
 
@@ -75,5 +77,10 @@ public class BoundingBox {
 
     public static boolean hasPositiveArea(BoundingBox r){
         return r.region[0][0]<r.region[1][0]&&r.region[0][1]<r.region[1][1];
+    }
+
+    @Override
+    public String toString() {
+        return "{{"+region[0][0]+","+region[0][1]+"},{"+region[1][0]+","+region[1][1]+"}}";
     }
 }
