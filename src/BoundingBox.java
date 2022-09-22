@@ -1,6 +1,6 @@
 import java.util.Arrays;
 
-public class BoundingBox {
+public class BoundingBox{
     private Double[][] region;
 
     //Constructors
@@ -46,13 +46,13 @@ public class BoundingBox {
                 point[1]>region[1][1];
     }
 
-    public Double[][] intersect(BoundingBox region){
+    public BoundingBox intersect(BoundingBox region){
         double x5 = Math.max(this.region[0][0], region.region[0][0]);
         double y5 = Math.max(this.region[0][1], region.region[0][1]);
         double x6 = Math.min(this.region[1][0], region.region[1][0]);
         double y6 = Math.min(this.region[1][1], region.region[1][1]);
 
-        return new Double[][]{{x5,x6},{y5,y6}};
+        return new BoundingBox(new Double[][]{{x5,y5},{x6,y6}});
     }
 
     //Boolean checks
@@ -62,6 +62,10 @@ public class BoundingBox {
                 rect.region[0][1]<=this.region[0][1] &&
                 rect.region[1][0]>=this.region[1][0] &&
                 rect.region[1][1]>=this.region[1][1];
+    }
+
+    public boolean isEqualsTo(BoundingBox rect){
+        return rect.encompasses(this) && rect.isEncompassedBy(this);
     }
 
     public boolean encompasses(BoundingBox rect){

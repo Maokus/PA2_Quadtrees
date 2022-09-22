@@ -11,9 +11,8 @@ public class Tester {
                                      {9,10,11,12},
                                      {13,14,15,16}};
         QuadNode node = constructQuadTree(values);
-
-        System.out.println(node);
-
+        QuadNode min = node.getRectMin(new BoundingBox(new Double[][]{{0.0,0.0},{2.0,2.0}}));
+        System.out.println(min);
     }
 
     public static void printRectData(Object[] s){

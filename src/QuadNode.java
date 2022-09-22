@@ -11,23 +11,23 @@ public class QuadNode {
      * We will assume that each "QuadNode" encompasses the left and bottom border.
      */
     private QuadNode[] children;
-    private QuadNode minNode;
+    QuadNode minNode;
     private int min;
     private BoundingBox boundingBox;
 
     // Constructors
-    public QuadNode(int min, BoundingBox minRegion, BoundingBox nodeRegion){
+    public QuadNode(int min, BoundingBox nodeRegion){
         this.min = min;
         this.children = new QuadNode[4];
         this.boundingBox = nodeRegion;
     }
 
-    public QuadNode(int min, Double[][] minRegion, Double[][] nodeRegion){
-        this(min, new BoundingBox(minRegion), new BoundingBox(nodeRegion));
+    public QuadNode(int min, Double[][] nodeRegion){
+        this(min, new BoundingBox(nodeRegion));
     }
 
     public QuadNode(BoundingBox region) {
-        this(0,region,region);
+        this(0,region);
     }
 
     public QuadNode(Double[][] region) {
@@ -203,12 +203,18 @@ public class QuadNode {
 
     // returns set of min, min pos. Every queried rectangle includes every quadrant on the boundary of the queried rectangle.
     public QuadNode getRectMin(BoundingBox searchArea){
-
-        Double[][] currentSearchArea = this.boundingBox.intersect(searchArea);
-        if(this.boundingBox.isEncompassedBy(searchArea)){
-            return null; //TODO: Should return min and position
+        //Check for equality
+        if (searchArea.isEqualsTo(this.boundingBox)) return this.minNode;
+        if (!searchArea.hasPositiveArea()) return new QuadNode(Integer.MAX_VALUE, new BoundingBox(new Double[][]{{0.0,0.0},{0.0,0.0}}));
+        QuadNode retNode = null;
+        for (QuadNode child : children){
+            if (child == null) continue;
+            QuadNode newRetNode = child.getRectMin(searchArea.intersect(child.boundingBox));
+            if (retNode == null || newRetNode.min < retNode.min){
+                retNode = newRetNode;
+            }
         }
-        return null; //TODO: Complete implementation
+        return retNode;
     }
 
 
