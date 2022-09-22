@@ -6,9 +6,10 @@ public class Tester {
                                      {5,6,3,8},
                                      {9,4,2,4},
                                      {9,1,3,4}};
-        QuadNode node = new QuadNode(0, 4, 0, 4);
+        QuadNode node = new QuadNode(new Double[][]{{0.0, 0.0}, {4.0, 4.0}});
 
         node.genChildren();
+
         for (int i = 0; i < 4; ++i) {
             QuadNode[] children = node.getChildren();
             children[i].genChildren();
@@ -20,13 +21,13 @@ public class Tester {
             }
         }
 
-        printRectData(node.getRectMin(0, 4, 0, 4));
-        printRectData(node.getRectMin(0, 1.95, 0, 1.95));
-        printRectData(node.getRectMin(0, 1.95, 0, 4));
-        printRectData(node.getRectMin(1, 2.95, 0, 1.95));
-        printRectData(node.getRectMin(1.05, 3.2, 1.05, 3.2));
+        //printRectData(node.getRectMin(new Double[][]{{-1.0,-1.0}, {5.0, 5.0}}));
+        //printRectData(node.getRectMin(0, 1.95, 0, 1.95));
+        //printRectData(node.getRectMin(0, 1.95, 0, 4));
+        //printRectData(node.getRectMin(1, 2.95, 0, 1.95));
+        //printRectData(node.getRectMin(1.05, 3.2, 1.05, 3.2));
 
-        //System.out.println(node);
+        System.out.println(node);
 
     }
 
