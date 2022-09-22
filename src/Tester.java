@@ -2,10 +2,28 @@ import java.util.Arrays;
 
 public class Tester {
     public static void main(String[] args) {
-        int[][] values = new int[][]{{6,4,7,4},
+        /*int[][] values = new int[][]{{6,4,7,4},
                                      {5,6,3,8},
                                      {9,4,2,4},
-                                     {9,1,3,4}};
+                                     {9,1,3,4}};*/
+        int[][] values = new int[][]{{1,2,1,4},
+                                     {5,6,7,8},
+                                     {9,10,11,12},
+                                     {13,14,15,16}};
+        QuadNode node = constructQuadTree(values);
+
+        System.out.println(node);
+
+    }
+
+    public static void printRectData(Object[] s){
+        System.out.print(String.format("Min is: %d, ", s[0]));
+        double[] s1 = (double[]) s[1];
+        System.out.println(Arrays.toString(s1));
+        System.out.println();
+    }
+
+    public static QuadNode constructQuadTree(int[][] values){
         QuadNode node = new QuadNode(new Double[][]{{0.0, 0.0}, {4.0, 4.0}});
 
         node.genChildren();
@@ -21,20 +39,6 @@ public class Tester {
             }
         }
 
-        //printRectData(node.getRectMin(new Double[][]{{-1.0,-1.0}, {5.0, 5.0}}));
-        //printRectData(node.getRectMin(0, 1.95, 0, 1.95));
-        //printRectData(node.getRectMin(0, 1.95, 0, 4));
-        //printRectData(node.getRectMin(1, 2.95, 0, 1.95));
-        //printRectData(node.getRectMin(1.05, 3.2, 1.05, 3.2));
-
-        System.out.println(node);
-
-    }
-
-    public static void printRectData(Object[] s){
-        System.out.print(String.format("Min is: %d, ", s[0]));
-        double[] s1 = (double[]) s[1];
-        System.out.println(Arrays.toString(s1));
-        System.out.println();
+        return node;
     }
 }

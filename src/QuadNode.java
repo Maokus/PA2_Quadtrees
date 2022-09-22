@@ -11,8 +11,8 @@ public class QuadNode {
      * We will assume that each "QuadNode" encompasses the left and bottom border.
      */
     private QuadNode[] children;
+    private QuadNode minNode;
     private int min;
-    private BoundingBox minBoundingBox;
     private BoundingBox boundingBox;
 
     // Constructors
@@ -20,7 +20,6 @@ public class QuadNode {
         this.min = min;
         this.children = new QuadNode[4];
         this.boundingBox = nodeRegion;
-        this.minBoundingBox = minRegion;
     }
 
     public QuadNode(int min, Double[][] minRegion, Double[][] nodeRegion){
@@ -92,13 +91,6 @@ public class QuadNode {
         this.boundingBox = boundingBox;
     }
 
-    public BoundingBox getMinBoundingBox() {
-        return minBoundingBox;
-    }
-
-    public void setMinBoundingBox(BoundingBox minBoundingBox) {
-        this.minBoundingBox = minBoundingBox;
-    }
 
     // HELPER METHODS
     // Specifies if the QuadNode has any children
@@ -146,13 +138,13 @@ public class QuadNode {
             if (child != null){
                 if (min == -1023456789){
                     min = child.getMin();
-                    minBoundingBox = child.getMinBoundingBox();
+                    minNode = child;
                     continue;
                 }
                 int childMin = child.getMin();
                 if(childMin<min){
                     min = child.getMin();
-                    minBoundingBox = child.getMinBoundingBox();
+                    minNode = child;
                 }
             }
         }
@@ -206,15 +198,11 @@ public class QuadNode {
     }
 
     public int getMinIndex(){
-        return getIndexFromPosition(minBoundingBox.midX(),minBoundingBox.midY());
+        return getIndexFromPosition(minNode.boundingBox.midX(),minNode.boundingBox.midY());
     }
 
-    public static boolean hasPositiveArea(Double[][] r){
-        return r[0][0]<r[1][0]&&r[0][1]<r[1][1];
-    } //
-
     // returns set of min, min pos. Every queried rectangle includes every quadrant on the boundary of the queried rectangle.
-    public Object[] getRectMin(BoundingBox searchArea){
+    public QuadNode getRectMin(BoundingBox searchArea){
 
         Double[][] currentSearchArea = this.boundingBox.intersect(searchArea);
         if(this.boundingBox.isEncompassedBy(searchArea)){
@@ -235,7 +223,7 @@ public class QuadNode {
         }
         return "\nQuadNode{\n" +
                 "children=" + Arrays.toString(children) +
-                "\n, min=" + min + ", minregion="+ getMinBoundingBox()+
+                "\n, min=" + min + ", minregion="+ minNode.boundingBox+
                 ", region=" + Arrays.toString(boundingBox.getRegion()[0]) + " " + Arrays.toString(boundingBox.getRegion()[1]) + "\n"+
                 '}';
     }
