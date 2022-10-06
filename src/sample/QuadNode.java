@@ -1,14 +1,16 @@
+package sample;
+
 import java.util.Arrays;
 import java.util.Objects;
 
 public class QuadNode {
     /**
-     * children: the children of some QuadNode. label from bottom left: 2 3
+     * children: the children of some sample.QuadNode. label from bottom left: 2 3
      *                                                                  0 1
      * Note that each region contains the left and bottom border.
-     * min: minimum value of the QuadNode's children, or just the QuadNode itself
+     * min: minimum value of the sample.QuadNode's children, or just the sample.QuadNode itself
      * region: what is the region which the space covers [x1,y1,x2,y2]
-     * We will assume that each "QuadNode" encompasses the left and bottom border.
+     * We will assume that each "sample.QuadNode" encompasses the left and bottom border.
      */
     private QuadNode[] children;
     QuadNode minNode;
@@ -93,7 +95,7 @@ public class QuadNode {
 
 
     // HELPER METHODS
-    // Specifies if the QuadNode has any children
+    // Specifies if the sample.QuadNode has any children
     public boolean isLeaf() {
         for (int i = 0; i < 4 ; ++i){
             if (children[i] != null) return false;
@@ -105,7 +107,7 @@ public class QuadNode {
         return n.isLeaf();
     }
 
-    // Determine which quadrant the point is in wrt the QuadNode, excluding boundaries
+    // Determine which quadrant the point is in wrt the sample.QuadNode, excluding boundaries
     public Integer getIndexFromPosition(double x, double y){
 
         double midx = boundingBox.midX();
@@ -123,8 +125,8 @@ public class QuadNode {
 
     // Update Functions
 
-    // Gets the QuadNode which is specified in the region of a child.
-    // Recall that each "QuadNode" encompasses the left and bottom border.
+    // Gets the sample.QuadNode which is specified in the region of a child.
+    // Recall that each "sample.QuadNode" encompasses the left and bottom border.
     public QuadNode getQuadNode(double x, double y){
         if (this.isLeaf()) return this;
         int index = getIndexFromPosition(x, y);
@@ -156,7 +158,7 @@ public class QuadNode {
             this.min = override ? toAdd : toAdd + this.min;
             return;
         }
-        // Find the child where the QuadNode is in
+        // Find the child where the sample.QuadNode is in
         int index = getIndexFromPosition(x, y);
         children[index].updateQuadNode(x, y, toAdd, override);
 
@@ -222,12 +224,12 @@ public class QuadNode {
     @Override
     public String toString() {
         if(this.isLeaf()){
-            return "\nQuadNode Leaf{" +
+            return "\nsample.QuadNode Leaf{" +
                     "min=" + min +
                     ", region=" + Arrays.toString(boundingBox.getRegion()[0]) + " " + Arrays.toString(boundingBox.getRegion()[1]) +
                     '}';
         }
-        return "\nQuadNode{\n" +
+        return "\nsample.QuadNode{\n" +
                 "children=" + Arrays.toString(children) +
                 "\n, min=" + min + ", minregion="+ minNode.boundingBox+
                 ", region=" + Arrays.toString(boundingBox.getRegion()[0]) + " " + Arrays.toString(boundingBox.getRegion()[1]) + "\n"+
