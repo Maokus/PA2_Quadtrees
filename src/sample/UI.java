@@ -10,8 +10,17 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.scene.control.*;
 import javafx.geometry.Insets;
+import javafx.util.Pair;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class UI extends Application{
+
+    static ArrayList<Pair<Integer, Integer>> selection = new ArrayList<>();
+    static int[][] points = new int[0][0];
+    static Label min = new Label("Min: ");
+
     public void start(Stage primaryStage){
         String appName = "Unnamed App";
         int padding = 10;
@@ -55,11 +64,10 @@ public class UI extends Application{
         AnchorPane.setRightAnchor(toolbar, 20.0);
         AnchorPane.setLeftAnchor(toolbar, 20.0);
         //Create range button
-        Button range = new Button("Set Range");
+        Button range = new Button("Clear Range");
         toolbar.getChildren().add(range);
         range.setMinHeight(50);
         //Create Min Label
-        Label min = new Label("Min: ");
         toolbar.getChildren().add(min);
         //Create Slider bars
         Slider sliderX = new Slider(Smin, Smax, incre);
@@ -125,6 +133,12 @@ public class UI extends Application{
         sliderX.setValue(Nx);
         sliderY.setValue(Ny);
 
+        //Event handlers
+        range.setOnAction(e -> {
+            selection.clear();
+            regenGrid(Nx, Ny, grid, tfw, tfh);
+        });
+
         Scene scene = new Scene(anchor, W, H);
         primaryStage.setTitle(appName);
         primaryStage.setScene(scene);
@@ -134,15 +148,67 @@ public class UI extends Application{
 
     private static void regenGrid(int Nx, int Ny, GridPane grid, int tfw, int tfh){
         grid.getChildren().clear();
+        int x1 = -1, y1 = -1, x2 = -1, y2 = -1;
+        if (selection.size() == 2) {
+            Pair<Integer, Integer> p1 = selection.get(0);
+            Pair<Integer, Integer> p2 = selection.get(1);
+            x1 = p1.getKey(); y1 = p1.getValue(); x2 = p2.getKey(); y2 = p2.getValue();
+            points = new int[Math.max(y1, y2) - Math.min(y1, y2) + 1][Math.max(x1, x2) - Math.min(x1, x2) + 1];
+        }
         for (int i = 0; i < Nx; i++){
             for (int j = 0; j < Ny; j++){
                 int number = Nx * i + j;
+                final int x = i, y = j;
                 TextField tf = new TextField(""+number);
+                if ((i <= Math.max(x1, x2) && i >= Math.min(x1, x2))
+                    && (j <= Math.max(y1, y2) && j >= Math.min(y1, y2))){
+                    tf.setStyle("-fx-background: green;");
+                    points[j - Math.min(y1, y2)][i - Math.min(x1, x2)] = Integer.parseInt(tf.getText());
+                }
+                if (points.length > 0) {
+                    System.out.println((Math.max(x1, x2) - Math.min(x1,x2)) + " " + (Math.max(y1, y2) - Math.min(y1, y2)));
+                    QuadNode node = constructQuadTree(points, Math.max(x1, x2) - Math.min(x1,x2), Math.max(y1, y2) - Math.min(y1, y2));
+                    QuadNode minimum = node.getRectMin(node.getBoundingBox());
+                    System.out.println(minimum);
+                    min.setText("Min: " + minimum.getMin());
+                }
+                if (i == x2 && j == y2){
+                    tf.setStyle("-fx-background: red;");
+                }
+                tf.setOnMouseClicked(e -> {
+                    if (e.isControlDown()){
+                        tf.setStyle("-fx-background: red; -fx-focus-color: red");
+                        selection.add(new Pair<>(x, y));
+                        if (selection.size() > 2){
+                            selection.remove(0);
+                        }
+                        if (selection.size() == 2) regenGrid(Nx, Ny, grid, tfw, tfh);
+                    }
+                });
                 tf.setAlignment(Pos.CENTER);
                 tf.setPrefSize(tfw, tfh);
                 grid.add(tf, i, j);
             }
         }
+    }
+
+    private static QuadNode constructQuadTree(int[][] values, double x, double y){
+        QuadNode node = new QuadNode(new Double[][]{{0.0, 0.0}, {x, y}});
+
+        node.genChildren();
+
+        for (int i = 0; i < 4; ++i) {
+            QuadNode[] children = node.getChildren();
+            children[i].genChildren();
+        }
+
+        for (double i = 0; i < x; ++i){
+            for (double j = 0; j < y; ++j){
+                node.updateQuadNode(j + 0.5, i + 0.5, values[(int) i][(int) j], false);
+            }
+        }
+
+        return node;
     }
 
     public static void main(String args[]){
