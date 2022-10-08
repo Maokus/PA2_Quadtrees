@@ -235,12 +235,18 @@ public class QuadNode {
         return getIndexFromPosition(minNode.boundingBox.midX(),minNode.boundingBox.midY());
     }
 
-    private QuadNode getTrueMin
+    private QuadNode getTrueMin(){
+        QuadNode trueMin = this.minNode;
+        while(!trueMin.isLeaf()){
+            trueMin = trueMin.minNode;
+        }
+        return trueMin;
+    }
 
     // returns set of min, min pos. Every queried rectangle includes every quadrant on the boundary of the queried rectangle.
     public QuadNode getRectMin(BoundingBox searchArea){
         //Check for equality
-        if (searchArea.isEqualsTo(this.boundingBox)) return this.minNode;
+        if (searchArea.isEqualsTo(this.boundingBox)) return getTrueMin();
         if (!searchArea.hasPositiveArea()) return new QuadNode(Integer.MAX_VALUE, new BoundingBox(new Double[][]{{0.0,0.0},{0.0,0.0}}));
         QuadNode retNode = null;
         for (QuadNode child : children){

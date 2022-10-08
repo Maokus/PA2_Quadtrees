@@ -8,9 +8,9 @@ public class Tester {
                                      {5,6,3,8},
                                      {9,4,2,4},
                                      {9,1,3,4}};*/
-        int[][] values = new int[][]{{1,2,1,4},
+        int[][] values = new int[][]{{10,2,10,4},
                                      {5,6,7,8},
-                                     {9,10,11,12},
+                                     {9,1,11,12},
                                      {13,14,15,16},};
         int[][] gaming = new int[8][8];
         for (int i = 0; i < 8; i++){
@@ -20,11 +20,11 @@ public class Tester {
         }
         int[][] twobtwo = new int[][]{{1,2},{3,4}};
         QuadNode node = QuadNode.constructQuadNode(values);
-//        QuadNode min = node.getRectMin(new BoundingBox(new Double[][]{{1.0,1.0},{4.0,4.0}}));
+        QuadNode min = node.getRectMin(new BoundingBox(new Double[][]{{1.0,1.0},{4.0,4.0}}));
 //        QuadNode min = node.getRectMin(node.getBoundingBox());
 //        System.out.println(node);
 //        System.out.println(round(10));
-        System.out.println(node.minNode);
+        System.out.println(min);
     }
 
     public static int round(int n){
