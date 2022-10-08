@@ -1,6 +1,8 @@
 package sample;
 
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -22,15 +24,24 @@ public class UI extends Application{
     static Label min = new Label("Min: ");
     static QuadNode minimum;
 
+    static int[][] terrain;
+    static QuadNode node;
+
+    static int Nx = 10, Ny = 8;
+
     public void start(Stage primaryStage){
         String appName = "Unnamed App";
         int padding = 10;
-        int Nx = 10, Ny = 8;
         int W = 800, H = 500;
         int Smin = 1, Smax = 50;
+        int iniNx = 10, iniNy = 8;
+        Nx = iniNx;
+        Ny = iniNy;
         int scw = 500, sch = 250;
         int tfw = 35, tfh = 20;
         int incre = 1;
+        clearTerrain(Nx, Ny);
+        reconNode();
 
         //Define gridpane
         ScrollPane sp = new ScrollPane();
@@ -123,16 +134,22 @@ public class UI extends Application{
             int X = (int) Math.round(sliderX.getValue());
             int Y = (int) Math.round(sliderY.getValue());
             sltfX.setText(X + "");
+            terrain = padArray(terrain, 0, X, Y);
+            Nx = X;
+            Ny = Y;
             regenGrid(X, Y, grid, tfw, tfh);
         });
         sliderY.valueProperty().addListener(ov -> {
             int X = (int) Math.round(sliderX.getValue());
             int Y = (int) Math.round(sliderY.getValue());
             sltfY.setText(Y + "");
+            terrain = padArray(terrain, 0, X, Y);
+            Nx = X;
+            Ny = Y;
             regenGrid(X, Y, grid, tfw, tfh);
         });
-        sliderX.setValue(Nx);
-        sliderY.setValue(Ny);
+        sliderX.setValue(iniNx);
+        sliderY.setValue(iniNy);
 
         //Event handlers
         range.setOnAction(e -> {
@@ -147,6 +164,13 @@ public class UI extends Application{
         primaryStage.show();
     }
 
+    private static void clearTerrain(int Nx, int Ny){
+        terrain = new int[Ny][Nx];
+        for (int i = 0; i < Ny; i++){
+            Arrays.fill(terrain[i], 0);
+        }
+    }
+
     private static void regenGrid(int Nx, int Ny, GridPane grid, int tfw, int tfh){
         grid.getChildren().clear();
         int x1 = -1, y1 = -1, x2 = -1, y2 = -1;
@@ -158,26 +182,43 @@ public class UI extends Application{
         }
         for (int i = 0; i < Nx; i++){
             for (int j = 0; j < Ny; j++){
-                int number = Nx * i + j;
                 final int x = i, y = j;
-                TextField tf = new TextField(""+number);
+                TextField tf = new TextField(""+terrain[y][x]);
+                Double[] minPos = null;
+                if (minimum != null){
+                    minPos = minimum.getBoundingBox().getRegion()[0];
+                }
                 if ((i <= Math.max(x1, x2) && i >= Math.min(x1, x2))
                     && (j <= Math.max(y1, y2) && j >= Math.min(y1, y2))){
                     tf.setStyle("-fx-background: green;");
-                    if (minimum != null){
-                        BoundingBox things = minimum.minNode.getBoundingBox();
+                    if (minPos != null && i == (int) Math.round(minPos[0]) && j == (int) Math.round(minPos[1])){
+                        tf.setStyle("-fx-background: orange;");
                     }
-                    points[j - Math.min(y1, y2)][i - Math.min(x1, x2)] = Integer.parseInt(tf.getText());
                 }
-                if (points.length > 0) {
-                    points = padArray(points, round(Math.max(points.length, points[0].length)));
-                    QuadNode node = QuadNode.constructQuadNode(points);
-                    minimum = node.getRectMin(node.getBoundingBox());
+                if (x1 != -1 && y1 != -1 && x2 != -1 && y2 != -1){
+                    minimum = node.getRectMin(new BoundingBox(new Double[][]{{(double) Math.min(x1,x2), (double) Math.min(y1, y2)},{
+                            (double) Math.max(x1,x2) + 1, (double) Math.max(y1,y2) + 1
+                    }}));
+                    System.out.println(minimum);
                     min.setText("Min: " + minimum.getMin());
                 }
                 if (i == x2 && j == y2){
                     tf.setStyle("-fx-background: red;");
                 }
+                tf.focusedProperty().addListener((arg0, oldPropertyValue, newPropertyValue) -> {
+                    if (!newPropertyValue)
+                    {
+                        try{
+                            terrain[y][x] = Integer.parseInt(tf.getText());
+                        }
+                        catch(Exception e){
+                            terrain[y][x] = 0;
+                            tf.setText("0");
+                        }
+                        reconNode();
+                        System.out.println("set the things");
+                    }
+                });
                 tf.setOnMouseClicked(e -> {
                     if (e.isControlDown()){
                         tf.setStyle("-fx-background: red; -fx-focus-color: red");
@@ -204,15 +245,23 @@ public class UI extends Application{
         return m << 1;
     }
 
-    private static int[][] padArray(int[][] arr, int numOfPads) {
-        int[][] temp = new int[numOfPads][numOfPads];
+    private static void reconNode(){
+        node = QuadNode.constructQuadNode(padArray(terrain, round(Math.max(Nx, Ny))));
+    }
+
+    private static int[][] padArray(int[][] arr, int value, int X, int Y){
+        int[][] temp = new int[Y][X];
         for (int[] ints : temp) {
-            Arrays.fill(ints, Integer.MAX_VALUE);
+            Arrays.fill(ints, value);
         }
-        for (int i = 0; i < arr.length; i++) {
-            System.arraycopy(arr[i], 0, temp[i], 0, arr[i].length);
+        for (int i = 0; i < Math.min(temp.length, arr.length); i++) {
+            System.arraycopy(arr[i], 0, temp[i], 0, Math.min(arr[i].length, temp[i].length));
         }
         return temp;
+    }
+
+    private static int[][] padArray(int[][] arr, int numOfPads) {
+        return padArray(arr, Integer.MAX_VALUE, numOfPads, numOfPads);
     }
 
     public static void main(String args[]){
