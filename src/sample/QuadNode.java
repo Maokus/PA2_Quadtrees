@@ -236,9 +236,9 @@ public class QuadNode {
     }
 
     private QuadNode getTrueMin(){
-        QuadNode trueMin = this.minNode;
+        QuadNode trueMin = this;
         while(!trueMin.isLeaf()){
-            trueMin = trueMin.minNode;
+            trueMin = trueMin.minNode == null ? trueMin : trueMin.minNode;
         }
         return trueMin;
     }
@@ -248,11 +248,11 @@ public class QuadNode {
         //Check for equality
         if (searchArea.isEqualsTo(this.boundingBox)) return getTrueMin();
         if (!searchArea.hasPositiveArea()) return new QuadNode(Integer.MAX_VALUE, new BoundingBox(new Double[][]{{0.0,0.0},{0.0,0.0}}));
-        QuadNode retNode = null;
+        QuadNode retNode = new QuadNode(Integer.MAX_VALUE, new BoundingBox(new Double[][]{{0.0,0.0},{0.0,0.0}}));
         for (QuadNode child : children){
             if (child == null) continue;
             QuadNode newRetNode = child.getRectMin(searchArea.intersect(child.boundingBox));
-            if ((retNode == null || newRetNode == null) || newRetNode.min < retNode.min){
+            if (newRetNode.min < retNode.min){
                 retNode = newRetNode;
             }
         }
