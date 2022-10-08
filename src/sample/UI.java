@@ -30,7 +30,7 @@ public class UI extends Application{
     static int Nx = 10, Ny = 8;
 
     public void start(Stage primaryStage){
-        String appName = "Unnamed App";
+        String appName = "I love Trees 🌲🌳🌴";
         int padding = 10;
         int W = 800, H = 500;
         int Smin = 1, Smax = 50;
