@@ -209,7 +209,9 @@ public class UI extends Application{
                     if (!newPropertyValue)
                     {
                         try{
-                            terrain[y][x] = Integer.parseInt(tf.getText());
+                            int temp = Integer.parseInt(tf.getText());
+                            terrain[y][x] = temp;
+                            tf.setText(Integer.toString(temp));
                         }
                         catch(Exception e){
                             terrain[y][x] = 0;
