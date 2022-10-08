@@ -107,21 +107,6 @@ public class QuadNode {
         return n.isLeaf();
     }
 
-    // Determine which quadrant the point is in wrt the sample.QuadNode, excluding boundaries
-    public Integer getIndexFromPosition(double x, double y){
-
-        double midx = boundingBox.midX();
-        double midy = boundingBox.midY();
-
-        if(x==midx){return null;}
-        if(y==midy){return null;}
-
-        int index = 0;
-        if (x > midx) index += 1;
-        if (y > midy) index += 2;
-        return index;
-    }
-
 
     // Update Functions
 
@@ -150,6 +135,53 @@ public class QuadNode {
                 }
             }
         }
+    }
+
+    public static void genChildren(QuadNode node){
+        if (node.boundingBox.width() * node.boundingBox.height() <= 1){
+            return;
+        }
+        node.genChildren();
+        for (int i = 0; i < 4; i++){
+            QuadNode[] children = node.getChildren();
+            genChildren(children[i]);
+        }
+    }
+
+    //Assuming square input
+    public static QuadNode constructQuadNode(int[][] values){
+        double n = values.length;
+        QuadNode node = new QuadNode(new Double[][]{{0.0, 0.0},{n, n}});
+
+        //Gen the children
+        genChildren(node);
+
+        //Populate with values
+        for (double i=0; i < n; ++i){
+            for (double j=0; j< n; ++j){
+//                System.out.println("up: " + (j + 0.5) + " " + (i + 0.5));
+                node.updateQuadNode(j + 0.5, i + 0.5, values[(int) i][(int) j], false);
+            }
+        }
+
+        return node;
+    }
+
+    // Determine which quadrant the point is in wrt the sample.QuadNode, excluding boundaries
+    public Integer getIndexFromPosition(double x, double y){
+
+        double midx = boundingBox.midX();
+        double midy = boundingBox.midY();
+
+//        System.out.println(x + " " + midx + "; " + y + " " + midy);
+
+        if(x==midx){return null;}
+        if(y==midy){return null;}
+
+        int index = 0;
+        if (x > midx) index += 1;
+        if (y > midy) index += 2;
+        return index;
     }
 
     // Update the Node at some position
@@ -203,6 +235,8 @@ public class QuadNode {
         return getIndexFromPosition(minNode.boundingBox.midX(),minNode.boundingBox.midY());
     }
 
+    private QuadNode getTrueMin
+
     // returns set of min, min pos. Every queried rectangle includes every quadrant on the boundary of the queried rectangle.
     public QuadNode getRectMin(BoundingBox searchArea){
         //Check for equality
@@ -212,7 +246,7 @@ public class QuadNode {
         for (QuadNode child : children){
             if (child == null) continue;
             QuadNode newRetNode = child.getRectMin(searchArea.intersect(child.boundingBox));
-            if (retNode == null || newRetNode.min < retNode.min){
+            if ((retNode == null || newRetNode == null) || newRetNode.min < retNode.min){
                 retNode = newRetNode;
             }
         }
@@ -224,12 +258,12 @@ public class QuadNode {
     @Override
     public String toString() {
         if(this.isLeaf()){
-            return "\nsample.QuadNode Leaf{" +
+            return "\nQuadNode Leaf{" +
                     "min=" + min +
                     ", region=" + Arrays.toString(boundingBox.getRegion()[0]) + " " + Arrays.toString(boundingBox.getRegion()[1]) +
                     '}';
         }
-        return "\nsample.QuadNode{\n" +
+        return "\nQuadNode{\n" +
                 "children=" + Arrays.toString(children) +
                 "\n, min=" + min + ", minregion="+ minNode.boundingBox+
                 ", region=" + Arrays.toString(boundingBox.getRegion()[0]) + " " + Arrays.toString(boundingBox.getRegion()[1]) + "\n"+

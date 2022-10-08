@@ -20,6 +20,7 @@ public class UI extends Application{
     static ArrayList<Pair<Integer, Integer>> selection = new ArrayList<>();
     static int[][] points = new int[0][0];
     static Label min = new Label("Min: ");
+    static QuadNode minimum;
 
     public void start(Stage primaryStage){
         String appName = "Unnamed App";
@@ -163,13 +164,15 @@ public class UI extends Application{
                 if ((i <= Math.max(x1, x2) && i >= Math.min(x1, x2))
                     && (j <= Math.max(y1, y2) && j >= Math.min(y1, y2))){
                     tf.setStyle("-fx-background: green;");
+                    if (minimum != null){
+                        BoundingBox things = minimum.minNode.getBoundingBox();
+                    }
                     points[j - Math.min(y1, y2)][i - Math.min(x1, x2)] = Integer.parseInt(tf.getText());
                 }
                 if (points.length > 0) {
-                    System.out.println((Math.max(x1, x2) - Math.min(x1,x2)) + " " + (Math.max(y1, y2) - Math.min(y1, y2)));
-                    QuadNode node = constructQuadTree(points, Math.max(x1, x2) - Math.min(x1,x2), Math.max(y1, y2) - Math.min(y1, y2));
-                    QuadNode minimum = node.getRectMin(node.getBoundingBox());
-                    System.out.println(minimum);
+                    points = padArray(points, round(Math.max(points.length, points[0].length)));
+                    QuadNode node = QuadNode.constructQuadNode(points);
+                    minimum = node.getRectMin(node.getBoundingBox());
                     min.setText("Min: " + minimum.getMin());
                 }
                 if (i == x2 && j == y2){
@@ -192,23 +195,24 @@ public class UI extends Application{
         }
     }
 
-    private static QuadNode constructQuadTree(int[][] values, double x, double y){
-        QuadNode node = new QuadNode(new Double[][]{{0.0, 0.0}, {x, y}});
-
-        node.genChildren();
-
-        for (int i = 0; i < 4; ++i) {
-            QuadNode[] children = node.getChildren();
-            children[i].genChildren();
+    private static int round(int n){
+        int m = 0x8000;
+        n = n - 1;
+        while((m & n) == 0){
+            m >>= 1;
         }
+        return m << 1;
+    }
 
-        for (double i = 0; i < x; ++i){
-            for (double j = 0; j < y; ++j){
-                node.updateQuadNode(j + 0.5, i + 0.5, values[(int) i][(int) j], false);
-            }
+    private static int[][] padArray(int[][] arr, int numOfPads) {
+        int[][] temp = new int[numOfPads][numOfPads];
+        for (int[] ints : temp) {
+            Arrays.fill(ints, Integer.MAX_VALUE);
         }
-
-        return node;
+        for (int i = 0; i < arr.length; i++) {
+            System.arraycopy(arr[i], 0, temp[i], 0, arr[i].length);
+        }
+        return temp;
     }
 
     public static void main(String args[]){
