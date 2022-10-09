@@ -1,4 +1,4 @@
-import java.util.Arrays;
+package sample;
 
 public class BoundingBox{
     private Double[][] region;
