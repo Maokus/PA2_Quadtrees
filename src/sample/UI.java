@@ -210,8 +210,8 @@ public class UI extends Application{
                     {
                         try{
                             int temp = Integer.parseInt(tf.getText());
-                            terrain[y][x] = temp;
-                            tf.setText(Integer.toString(temp));
+                            terrain[y][x] = Math.max(temp, 0);
+                            tf.setText(Integer.toString(Math.max(temp, 0)));
                         }
                         catch(Exception e){
                             terrain[y][x] = 0;
