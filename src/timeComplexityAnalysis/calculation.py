@@ -38,21 +38,5 @@ for i in range(2, 1000):
     y1 = 1
     x2 = (1<<i) -1
     y2 = (1<<i) -1
-    count = findNumSquaresUpper(x1, x2, y1, y2, i)
-    #print(1 << i, count)
-    #print("For n = {}, we have an (upper) average count of: {}".format(1<<i, count))
-
-print()
-print()
-
-
-for i in range(1, 10):
-    count = 0
-    nums = 0
-    for x1 in range(1<<i):
-        for x2 in range(x1+1, 1<<i):       
-            for y1 in range(1<<i):
-                for y2 in range(y1+1, 1<<i):
-                    count += findNumSquaresUpper(x1, x2, y1, y2, i)
-                    nums += 1
-    print("For n = {}, we have an (upper) average count of: {}".format(1<<i, count/nums))
+    count = findNumSquaresUpper(x1, x2, y1, y2, i) / ((1<<i) -1)
+    print(count)
