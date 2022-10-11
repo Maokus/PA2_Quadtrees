@@ -1,6 +1,7 @@
 package sample;
 
 import java.util.Arrays;
+import java.util.Random;
 
 public class Tester {
     public static void main(String[] args) {
@@ -19,12 +20,22 @@ public class Tester {
             }
         }
         int[][] twobtwo = new int[][]{{1,2},{3,4}};
-        QuadNode node = QuadNode.constructQuadNode(values);
-        QuadNode min = node.getRectMin(new BoundingBox(new Double[][]{{1.0,1.0},{4.0,4.0}}));
+//        QuadNode node = QuadNode.constructQuadNode(values);
+//        QuadNode min = node.getRectMin(new BoundingBox(new Double[][]{{1.0,1.0},{4.0,4.0}}));
 //        QuadNode min = node.getRectMin(node.getBoundingBox());
 //        System.out.println(node);
 //        System.out.println(round(10));
-        System.out.println(min);
+        Random rand = new Random();
+        int[][] big = new int[64][64];
+        for (int i = 0; i < 64; i++){
+            for (int j = 0; j < 64; j++){
+                big[i][j] = rand.nextInt(999) + 1;
+            }
+        }
+        big[23][40] = 0;
+        QuadNode bigNode = QuadNode.constructQuadNode(big);
+        QuadNode bigMin = bigNode.getRectMin(new BoundingBox(new Double[][]{{2.0,2.0},{63.0,63.0}}));
+        System.out.println(bigMin);
     }
 
     public static int round(int n){
